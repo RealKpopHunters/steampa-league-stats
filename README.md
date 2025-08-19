@@ -108,26 +108,3 @@ Path of Exile 스팀파 리그의 통계를 시각화한 웹사이트입니다.
 
 ### 20. 전체 통계 요약
 - 모든 핵심 지표 통합 표시
-
-## 파일 구조
-
-```
-├── index.html              # 메인 대시보드 페이지
-├── js/
-│   └── dashboard.js        # 모든 차트 및 데이터 로직
-├── analysis_report.json    # 원본 데이터 파일
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Actions 배포 설정
-└── README.md              # 이 파일
-```
-
-## GitHub Pages 배포
-
-1. 이 저장소를 GitHub에 업로드
-2. Settings > Pages > Source에서 "GitHub Actions" 선택
-3. 자동으로 빌드 및 배포됩니다
-
-## 데이터 업데이트
-
-`analysis_report.json` 파일을 업데이트하면 웹사이트가 자동으로 새로운 데이터를 반영합니다.
