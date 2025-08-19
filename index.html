@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스팀파 리그 통계</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+        
+        .korean-font { font-family: 'Paperlogy-8ExtraBold', sans-serif; }
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .chart-bar { transition: width 0.8s ease-out; }
+        .character-list { max-height: 200px; overflow-y: auto; }
+        .expandable { cursor: pointer; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white korean-font">
+    <!-- 헤더 -->
+    <header class="bg-gradient-to-r from-blue-900 to-purple-900 p-6 text-center">
+        <h1 class="text-5xl font-extrabold mb-2">스팀파 리그 통계</h1>
+        <p class="text-xl opacity-80">Path of Exile 스팀파 리그 통계</p>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+        
+        <!-- 전체 통계 요약 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-yellow-400">📊 전체 리그 현황</h2>
+            <p class="text-center text-gray-300 mb-6">리그의 전체적인 참여 현황과 기본 통계</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="overall-stats">
+                <!-- JavaScript로 동적 생성 -->
+            </div>
+        </section>
+
+        <!-- 팀별 대결 통계 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-red-400">⚔️ 자나팀 vs 알바팀</h2>
+            <p class="text-center text-gray-300 mb-6">두 팀 간의 치열한 경쟁 결과와 성과 비교</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="team-battle">
+                <!-- JavaScript로 동적 생성 -->
+            </div>
+        </section>
+
+        <!-- 팀별 TOP 랭커 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-purple-400">👑 팀별 TOP 20 랭커</h2>
+            <p class="text-center text-gray-300 mb-6">각 팀의 최고 실력자들과 그들의 캐릭터</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-blue-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-yellow-300">🔥 자나팀 TOP 20</h3>
+                    <div id="jana-top20" class="space-y-2">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+                <div class="bg-red-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-yellow-300">⚡ 알바팀 TOP 20</h3>
+                    <div id="alba-top20" class="space-y-2">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 팀별 클래스 선호도 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-green-400">🎯 팀별 클래스 선호도</h2>
+            <p class="text-center text-gray-300 mb-6">각 팀이 주로 선택한 클래스와 전략적 성향</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-blue-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">자나팀 TOP 5</h3>
+                    <div id="jana-class-preference" class="space-y-3">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+                <div class="bg-red-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">알바팀 TOP 5</h3>
+                    <div id="alba-class-preference" class="space-y-3">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 클래스 전체 분포 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-green-400">🎯 전체 클래스 분포</h2>
+            <p class="text-center text-gray-300 mb-6">어떤 클래스가 가장 인기 있었는지, 리그의 직업 선호도(메타)를 보여줍니다</p>
+            <div class="bg-gray-800 rounded-xl p-6">
+                <div id="class-distribution" class="space-y-3">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 클래스별 사망 분석 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-orange-400">💀 클래스별 사망 분석</h2>
+            <p class="text-center text-gray-300 mb-6">각 클래스가 평균적으로 몇 레벨에서 사망했는지 보여줍니다</p>
+            <div class="bg-gray-800 rounded-xl p-6">
+                <div id="death-analysis" class="space-y-2">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 레벨별 현황 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-blue-400">📈 레벨별 현황</h2>
+            <p class="text-center text-gray-300 mb-6">레벨 구간별 캐릭터 분포와 각 구간에서의 사망률</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">캐릭터 분포</h3>
+                    <div id="level-distribution" class="space-y-3">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">사망률</h3>
+                    <div id="death-rate" class="space-y-3">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 클래스 성능 분석 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-purple-400">🏆 클래스 성능 분석</h2>
+            <p class="text-center text-gray-300 mb-6">생존율과 평균 레벨로 본 클래스별 성능 비교</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">생존율 TOP 15</h3>
+                    <div id="survival-rate" class="space-y-2">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">평균 레벨 TOP 15</h3>
+                    <div id="average-level" class="space-y-2">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 랭킹별 생존율 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-cyan-400">📊 랭킹구간별 생존율</h2>
+            <p class="text-center text-gray-300 mb-6">상위권, 중위권, 하위권 등 랭킹 구간별로 생존율이 어떻게 다른지 보여줍니다</p>
+            <div class="bg-gray-800 rounded-xl p-6">
+                <div id="ranking-survival" class="space-y-3">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 명예의 전당 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-yellow-400">🏅 명예의 전당</h2>
+            <p class="text-center text-gray-300 mb-6">최고 성과를 달성한 플레이어들과 아쉬운 사망자들</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">최고 레벨 사망자 TOP 10</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">안타깝게 사망한 고레벨 캐릭터들</p>
+                    <div id="tragic-deaths" class="space-y-2">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-center">총 레벨 합계 TOP 10</h3>
+                    <p class="text-sm text-gray-400 mb-4 text-center">가장 많은 레벨업 경험을 한 플레이어들</p>
+                    <div id="total-level-ranking" class="space-y-2">
+                        <!-- JavaScript로 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 최다 사망자 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-red-400">💀 최다 사망자 TOP 10</h2>
+            <p class="text-center text-gray-300 mb-6">가장 많은 캐릭터를 잃은 플레이어들 - 하드코어의 진정한 도전자들</p>
+            <div class="bg-gray-800 rounded-xl p-6">
+                <div id="death-count-ranking" class="space-y-2">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 통계 설명 -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold mb-6 text-center text-indigo-400">📋 통계 설명</h2>
+            <p class="text-center text-gray-300 mb-6">각 통계의 의미와 계산 방식에 대한 상세 설명</p>
+            <div class="bg-gray-800 rounded-xl p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="statistics-explanation">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-800 text-center p-6 mt-8">
+        <p class="text-gray-400">🎮 스팀파 리그 통계 사이트</p>
+    </footer>
+
+    <script>
+        // 전체 JSON 데이터를 JavaScript 객체로 임베드
+        const statsData = {
+            "league_analysis": {
+                "part1_overall_league_status": {
+                    "1_total_participants": {
+                        "description": "중복을 제외하고, 리그에 참여한 순수 플레이어(계정)가 총 몇 명인지 나타냅니다",
+                        "calculation": "Account 열에서 고유한 계정명의 개수를 셉니다",
+                        "value": 1536,
+                        "unit": "명"
+                    },
+                    "2_total_characters_created": {
+                        "description": "리그 기간 동안 생성된 모든 캐릭터의 총 개수입니다",
+                        "calculation": "데이터 파일의 전체 행(캐릭터) 개수를 셉니다",
+                        "value": 6699,
+                        "unit": "개"
+                    },
+                    "3_average_characters_per_account": {
+                        "description": "한 명의 플레이어가 평균적으로 몇 개의 캐릭터를 생성했는지 보여줍니다. 수치가 높을수록 캐릭터가 자주 사망했음을 의미할 수 있습니다",
+                        "calculation": "[총 생성된 캐릭터 수] / [총 참가 인원]",
+                        "value": 4.36,
+                        "unit": "개"
+                    },
+                    "4_class_distribution": {
+                        "description": "어떤 클래스가 가장 인기 있었는지, 리그의 직업 선호도(메타)를 보여줍니다",
+                        "calculation": "클래스별로 캐릭터 수를 세고, 전체 대비 비율(%)을 계산합니다",
+                        "data": {
+                            "머라우더": {"characters": 1249, "percentage": 18.64},
+                            "듀얼리스트": {"characters": 915, "percentage": 13.66},
+                            "레인저": {"characters": 639, "percentage": 9.54},
+                            "위치": {"characters": 585, "percentage": 8.73},
+                            "템플러": {"characters": 570, "percentage": 8.51},
+                            "버서커": {"characters": 397, "percentage": 5.93},
+                            "쉐도우": {"characters": 351, "percentage": 5.24},
+                            "챔피언": {"characters": 276, "percentage": 4.12},
+                            "엘리멘탈리스트": {"characters": 220, "percentage": 3.28},
+                            "치프틴": {"characters": 219, "percentage": 3.27},
+                            "가디언": {"characters": 185, "percentage": 2.76},
+                            "글래디에이터": {"characters": 146, "percentage": 2.18},
+                            "하이로펀트": {"characters": 140, "percentage": 2.09},
+                            "트릭스터": {"characters": 135, "percentage": 2.02},
+                            "사이온": {"characters": 119, "percentage": 1.78},
+                            "패스파인더": {"characters": 109, "percentage": 1.63},
+                            "저거넛": {"characters": 108, "percentage": 1.61},
+                            "네크로맨서": {"characters": 71, "percentage": 1.06},
+                            "슬레이어": {"characters": 70, "percentage": 1.04},
+                            "사보추어": {"characters": 44, "percentage": 0.66},
+                            "데드아이": {"characters": 43, "percentage": 0.64},
+                            "어센던트": {"characters": 39, "percentage": 0.58},
+                            "오컬티스트": {"characters": 30, "percentage": 0.45},
+                            "인퀴지터": {"characters": 18, "percentage": 0.27},
+                            "어쌔신": {"characters": 12, "percentage": 0.18},
+                            "워든": {"characters": 9, "percentage": 0.13}
+                        }
+                    },
+                    "5_death_analysis": {
+                        "average_death_level_by_class": {
+                            "description": "각 클래스가 평균적으로 몇 레벨에서 사망했는지 보여줍니다. 클래스별 안정성과 한계를 엿볼 수 있습니다",
+                            "calculation": "사망한 캐릭터들만 필터링한 후, 클래스별로 그룹화하여 Level의 평균을 계산합니다",
+                            "data": {
+                                "저거넛": 72.02,
+                                "챔피언": 68.79,
+                                "인퀴지터": 67.40,
+                                "가디언": 67.17,
+                                "버서커": 65.79,
+                                "슬레이어": 64.34,
+                                "엘리멘탈리스트": 63.50,
+                                "사보추어": 62.98,
+                                "글래디에이터": 62.81,
+                                "하이로펀트": 62.64,
+                                "워든": 62.50,
+                                "네크로맨서": 62.20,
+                                "치프틴": 60.78,
+                                "패스파인더": 60.61,
+                                "데드아이": 59.33,
+                                "어센던트": 59.06,
+                                "트릭스터": 58.38,
+                                "오컬티스트": 56.81,
+                                "어쌔신": 53.00,
+                                "사이온": 12.95,
+                                "듀얼리스트": 11.53,
+                                "쉐도우": 11.38,
+                                "템플러": 10.73,
+                                "머라우더": 9.90,
+                                "위치": 9.84,
+                                "레인저": 9.69
+                            }
+                        },
+                        "most_tragic_deaths_top10": {
+                            "description": "최고 레벨을 달성하고도 안타깝게 사망한 캐릭터 목록입니다. 하드코어 리그의 치열함을 보여줍니다",
+                            "calculation": "사망한 캐릭터들을 Level과 Experience 순으로 내림차순 정렬하여 상위 10명을 추출합니다",
+                            "data": [
+                                {"rank": 5, "level": 98, "class": "트릭스터", "character": "말량알바이호기", "account": "diafan#5113"},
+                                {"rank": 6, "level": 98, "class": "치프틴", "character": "자나깨나구불칩붕이", "account": "passingby2#0314"},
+                                {"rank": 7, "level": 98, "class": "버서커", "character": "자나_사회의회한", "account": "stylemate#0877"},
+                                {"rank": 9, "level": 97, "class": "저거넛", "character": "아빠가스팀파만하고놀아줄게_자나", "account": "kukugod#0020"},
+                                {"rank": 13, "level": 97, "class": "버서커", "character": "에어드랍이자나", "account": "GoAirDrop#1953"},
+                                {"rank": 15, "level": 97, "class": "버서커", "character": "알바왕비누쓰리", "account": "rrqnrl2#4755"},
+                                {"rank": 16, "level": 97, "class": "챔피언", "character": "달렉의용병하실알바구해요", "account": "920815#5344"},
+                                {"rank": 17, "level": 97, "class": "버서커", "character": "젤또무서워서알바팀간발라일호기", "account": "김발라#4145"},
+                                {"rank": 18, "level": 97, "class": "챔피언", "character": "젤튜브댓글알바입니다", "account": "ghost9723#4437"},
+                                {"rank": 19, "level": 97, "class": "치프틴", "character": "알바왕메이킹", "account": "프라보#7111"}
+                            ]
+                        },
+                        "survivor_vs_dead_average_level": {
+                            "description": "리그 종료 시점까지 살아남은 캐릭터와 사망한 캐릭터 그룹 간의 평균 레벨 차이를 보여줍니다",
+                            "calculation": "Dead 값(True/False)에 따라 두 그룹으로 나누어 각각의 평균 레벨을 계산합니다",
+                            "data": {
+                                "survivor_average_level": 30.34,
+                                "dead_average_level": 28.38
+                            }
+                        }
+                    },
+                    "6_level_range_distribution": {
+                        "description": "10레벨 단위로 각 구간에 얼마나 많은 캐릭터가 분포해 있는지 보여줍니다. 대다수의 유저가 머물러 있는 구간을 파악할 수 있습니다",
+                        "calculation": "레벨을 10단위 구간으로 나누고, 각 구간에 속한 캐릭터 수를 셉니다",
+                        "data": {
+                            "1-10": 2936,
+                            "11-20": 821,
+                            "21-30": 341,
+                            "31-40": 506,
+                            "41-50": 538,
+                            "51-60": 230,
+                            "61-70": 366,
+                            "71-80": 488,
+                            "81-90": 339,
+                            "91-100": 134
+                        }
+                    },
+                    "7_death_rate_by_level_range": {
+                        "description": "어떤 레벨 구간에서 캐릭터들이 가장 많이 사망했는지 사망률을 통해 보여줍니다. 게임의 난이도가 급상승하는 마의 구간을 파악할 수 있습니다",
+                        "calculation": "각 레벨 구간의 [사망자 수] / [해당 구간 전체 캐릭터 수]로 사망률(%)을 계산합니다",
+                        "data": {
+                            "1-10": {"deaths": 2477, "death_rate": 84.37},
+                            "11-20": {"deaths": 703, "death_rate": 85.63},
+                            "21-30": {"deaths": 268, "death_rate": 78.59},
+                            "31-40": {"deaths": 391, "death_rate": 77.27},
+                            "41-50": {"deaths": 463, "death_rate": 86.06},
+                            "51-60": {"deaths": 195, "death_rate": 84.78},
+                            "61-70": {"deaths": 312, "death_rate": 85.25},
+                            "71-80": {"deaths": 415, "death_rate": 85.04},
+                            "81-90": {"deaths": 271, "death_rate": 79.94},
+                            "91-100": {"deaths": 91, "death_rate": 67.91}
+                        }
+                    }
+                },
+                "part2_team_battle_analysis": {
+                    "8_team_distribution": {
+                        "description": "전체 캐릭터 중 자나팀, 알바팀, 무소속, 스파이가 각각 얼마나 차지하는지 보여줍니다",
+                        "calculation": "Character 이름 규칙에 따라 분류된 Team 열의 각 값별로 캐릭터 수를 셉니다",
+                        "data": {
+                            "자나팀": 3512,
+                            "알바팀": 2637,
+                            "무소속": 531,
+                            "스파이": 19
+                        }
+                    },
+                    "9_team_average_level": {
+                        "description": "어느 팀의 평균적인 성장 수준이 더 높은지 보여주는 지표입니다",
+                        "calculation": "자나팀과 알바팀으로 필터링 후, 각 팀의 평균 Level을 계산합니다",
+                        "data": {
+                            "알바팀": 29.68,
+                            "자나팀": 30.48
+                        }
+                    },
+                    "10_team_survival_rate": {
+                        "description": "어느 팀이 더 안정적으로 캐릭터를 생존시켰는지 보여주는 핵심 지표입니다",
+                        "calculation": "각 팀의 [생존한 캐릭터 수] / [팀 전체 캐릭터 수]로 생존율(%)을 계산합니다",
+                        "data": {
+                            "알바팀": 13.80,
+                            "자나팀": 14.83
+                        },
+                        "unit": "%"
+                    },
+                    "11_team_top200_rankers": {
+                        "description": "최상위권(1~200위)에 각 팀의 플레이어가 얼마나 포진해 있는지 보여줍니다",
+                        "calculation": "200위 이내의 캐릭터들 중 각 팀에 속한 캐릭터 수를 셉니다",
+                        "data": {
+                            "자나팀": 101,
+                            "알바팀": 98,
+                            "무소속": 1
+                        }
+                    },
+                    "12_team_class_preference_top5": {
+                        "description": "각 팀이 주로 어떤 클래스를 선택했는지 보여주어, 팀의 전략적 성향을 파악할 수 있습니다",
+                        "calculation": "각 팀 내에서 가장 많이 생성된 클래스 순으로 상위 5개를 보여줍니다",
+                        "data": {
+                            "자나팀": [
+                                {"class": "머라우더", "count": 614},
+                                {"class": "듀얼리스트", "count": 517},
+                                {"class": "템플러", "count": 303},
+                                {"class": "위치", "count": 280},
+                                {"class": "레인저", "count": 264}
+                            ],
+                            "알바팀": [
+                                {"class": "머라우더", "count": 542},
+                                {"class": "듀얼리스트", "count": 346},
+                                {"class": "위치", "count": 252},
+                                {"class": "템플러", "count": 215},
+                                {"class": "레인저", "count": 199}
+                            ]
+                        }
+                    },
+                    "13_team_total_experience": {
+                        "description": "팀원들이 리그에서 획득한 경험치의 총합입니다. 레벨보다 더 정확한 팀의 노력과 성과를 나타냅니다",
+                        "calculation": "각 팀의 Experience 열 값을 모두 더합니다",
+                        "data": {
+                            "알바팀": 573571129165,
+                            "자나팀": 724025152765
+                        }
+                    },
+                    "14_team_characters_above_level": {
+                        "description": "60, 70, 80, 90, 95레벨 등 특정 기준점을 돌파한 캐릭터가 각 팀에 몇 명이나 있는지 보여줍니다. 팀의 후반부 저력을 다각도로 비교할 수 있습니다",
+                        "calculation": "각 레벨 기준점 이상인 캐릭터 수를 팀별로 셉니다",
+                        "data": {
+                            "알바팀": {
+                                "above_60": 567,
+                                "above_70": 432,
+                                "above_80": 224,
+                                "above_90": 93,
+                                "above_95": 24
+                            },
+                            "자나팀": {
+                                "above_60": 758,
+                                "above_70": 569,
+                                "above_80": 287,
+                                "above_90": 98,
+                                "above_95": 26
+                            }
+                        }
+                    },
+                    "15_team_top20_rankers": {
+                        "description": "각 팀의 에이스 플레이어, 즉 가장 랭킹이 높은 20명을 보여줍니다",
+                        "calculation": "각 팀별로 Rank 순으로 오름차순 정렬하여 상위 20명의 정보를 추출합니다",
+                        "data": {
+                            "자나팀": [
+                                {"rank": 1, "character": "자나대방어일호", "account": "겨울대방어#4965"},
+                                {"rank": 2, "character": "치자나무", "account": "MeMirrorglhf#5883"},
+                                {"rank": 3, "character": "젤또남자좋아하자나", "account": "Jisoon1#1415"},
+                                {"rank": 4, "character": "야자나무아래서", "account": "신기하당#2996"},
+                                {"rank": 6, "character": "자나깨나구불칩붕이", "account": "passingby2#0314"},
+                                {"rank": 7, "character": "자나_사회의회한", "account": "stylemate#0877"},
+                                {"rank": 9, "character": "아빠가스팀파만하고놀아줄게_자나", "account": "kukugod#0020"},
+                                {"rank": 11, "character": "자나_찍먹", "account": "Mumbleland#0222"},
+                                {"rank": 13, "character": "에어드랍이자나", "account": "GoAirDrop#1953"},
+                                {"rank": 14, "character": "전전두루미자나", "account": "원너리#1411"},
+                                {"rank": 25, "character": "자나_더더잘해보기", "account": "naerok2#1840"},
+                                {"rank": 26, "character": "자나_스테마지막", "account": "stero2d#2708"},
+                                {"rank": 27, "character": "슬램좀그만하자나", "account": "멜우드#4320"},
+                                {"rank": 29, "character": "유배자나ㄴ감", "account": "Realshiny#4030"},
+                                {"rank": 30, "character": "자나_네거티브풀업", "account": "kyuriusuu#0314"},
+                                {"rank": 31, "character": "자나_리셋사호기", "account": "ResetComplete#2794"},
+                                {"rank": 32, "character": "라세괜찮자나", "account": "치이즈으#2054"},
+                                {"rank": 34, "character": "칲슬램은버터자나", "account": "passingby2#0314"},
+                                {"rank": 36, "character": "자나_엠제이", "account": "leebeer866#2723"},
+                                {"rank": 39, "character": "자나_절대적", "account": "AbsoluteConfidence#1609"}
+                            ],
+                            "알바팀": [
+                                {"rank": 5, "character": "말량알바이호기", "account": "diafan#5113"},
+                                {"rank": 8, "character": "알알바바", "account": "bearpub#4178"},
+                                {"rank": 10, "character": "용역알바", "account": "bbubub#4488"},
+                                {"rank": 12, "character": "불알바사삭", "account": "replus#4169"},
+                                {"rank": 15, "character": "알바왕비누쓰리", "account": "rrqnrl2#4755"},
+                                {"rank": 16, "character": "달렉의용병하실알바구해요", "account": "920815#5344"},
+                                {"rank": 17, "character": "젤또무서워서알바팀간발라일호기", "account": "김발라#4145"},
+                                {"rank": 18, "character": "젤튜브댓글알바입니다", "account": "ghost9723#4437"},
+                                {"rank": 19, "character": "알바왕메이킹", "account": "프라보#7111"},
+                                {"rank": 20, "character": "꿀차복구알바요", "account": "Honeycha#5973"},
+                                {"rank": 21, "character": "커피프린스오호점알바생젤또곤듀님", "account": "둡선생#3373"},
+                                {"rank": 22, "character": "알바_이선생의작고은밀한", "account": "에헹으헹#1327"},
+                                {"rank": 23, "character": "호러특급알바생", "account": "호러방위대#4342"},
+                                {"rank": 24, "character": "커피프린스삼호점알바생젤또완쟈님", "account": "둡선생#3373"},
+                                {"rank": 28, "character": "알바하는듀얼리스트스랄", "account": "pjsdevil#2432"},
+                                {"rank": 33, "character": "바알집알바", "account": "baramchi#6846"},
+                                {"rank": 35, "character": "렉사당한알바", "account": "BlueSince#3160"},
+                                {"rank": 37, "character": "알바뛰는용병", "account": "baekhoseok#5564"},
+                                {"rank": 38, "character": "알바생포포", "account": "Sielin#6713"},
+                                {"rank": 40, "character": "로아알바꿔치기", "account": "CYLchan#6050"}
+                            ]
+                        }
+                    }
+                },
+                "part3_detailed_analysis": {
+                    "16_class_survival_rate": {
+                        "description": "어떤 클래스가 생존에 유리하고 불리했는지 보여줍니다. 숨은 꿀클래스나 함정 클래스를 발견할 수 있습니다",
+                        "calculation": "클래스별로 그룹화하여 각각의 생존율을 계산합니다",
+                        "data": {
+                            "어쌔신": 41.67,
+                            "레인저": 35.37,
+                            "사이온": 31.93,
+                            "챔피언": 29.35,
+                            "패스파인더": 23.85,
+                            "저거넛": 22.22,
+                            "가디언": 21.08,
+                            "글래디에이터": 19.18,
+                            "엘리멘탈리스트": 18.18,
+                            "하이로펀트": 17.86,
+                            "네크로맨서": 16.90,
+                            "인퀴지터": 16.67,
+                            "데드아이": 16.28,
+                            "치프틴": 15.98,
+                            "위치": 15.21,
+                            "트릭스터": 14.07,
+                            "템플러": 13.68,
+                            "오컬티스트": 13.33,
+                            "슬레이어": 12.86,
+                            "쉐도우": 12.25,
+                            "워든": 11.11,
+                            "버서커": 11.08,
+                            "듀얼리스트": 10.71,
+                            "머라우더": 10.65,
+                            "어센던트": 10.26,
+                            "사보추어": 4.55
+                        },
+                        "unit": "%"
+                    },
+                    "17_class_average_level": {
+                        "description": "각 클래스가 평균적으로 도달한 레벨을 보여줍니다. 생존율과 함께 보면 클래스의 잠재력을 더 잘 이해할 수 있습니다",
+                        "calculation": "클래스별로 그룹화하여 Level의 평균을 계산합니다",
+                        "data": {
+                            "저거넛": 70.22,
+                            "챔피언": 68.93,
+                            "가디언": 67.71,
+                            "인퀴지터": 66.17,
+                            "버서커": 65.87,
+                            "슬레이어": 65.09,
+                            "글래디에이터": 63.73,
+                            "사보추어": 63.70,
+                            "네크로맨서": 63.45,
+                            "엘리멘탈리스트": 63.35,
+                            "하이로펀트": 62.44,
+                            "워든": 60.67,
+                            "어센던트": 60.59,
+                            "치프틴": 60.37,
+                            "데드아이": 59.56,
+                            "트릭스터": 59.33,
+                            "패스파인더": 59.09,
+                            "오컬티스트": 57.70,
+                            "어쌔신": 51.50,
+                            "듀얼리스트": 11.84,
+                            "쉐도우": 11.70,
+                            "사이온": 11.17,
+                            "템플러": 10.86,
+                            "머라우더": 10.38,
+                            "위치": 10.14,
+                            "레인저": 8.00
+                        }
+                    },
+                    "18_survival_rate_by_ranking": {
+                        "description": "상위권, 중위권, 하위권 등 랭킹 구간별로 생존율이 어떻게 다른지 보여줍니다",
+                        "calculation": "Rank를 500 단위 구간으로 나누고, 각 구간의 생존율을 계산합니다",
+                        "data": {
+                            "[0, 500)": 23.45,
+                            "[500, 1000)": 14.20,
+                            "[1000, 1500)": 15.40,
+                            "[1500, 2000)": 14.40,
+                            "[2000, 2500)": 19.00,
+                            "[2500, 3000)": 22.80,
+                            "[3000, 3500)": 14.20,
+                            "[3500, 4000)": 13.00,
+                            "[4000, 4500)": 8.00,
+                            "[4500, 5000)": 5.60,
+                            "[5000, 5500)": 11.00,
+                            "[5500, 6000)": 4.40,
+                            "[6000, 6500)": 34.00,
+                            "[6500, 7000)": 58.00
+                        },
+                        "unit": "%"
+                    },
+                    "19_account_total_level_top30": {
+                        "description": "한 명의 플레이어가 키운 모든 캐릭터의 레벨 총합 순위입니다. 리그에 가장 많은 시간과 노력을 쏟은 플레이어를 보여줍니다",
+                        "calculation": "계정별로 그룹화하여 Level의 총합을 계산한 후, 높은 순으로 정렬합니다",
+                        "data": [
+                            {
+                                "account": "AgeofMytho1ogy#2689",
+                                "total_level": 766,
+                                "characters": "알바다유리섬(90), 알바밤바의밤(79), 알바우궁수(71), 알바밤군밤(67), 알바밤알밤(48), 알바자회(45), 스알바팀(39), 알바람쥐(22), 알바밤군밤알밤(19), 알바다소라찜(18), 알바바밤바바밤바바밤(18), 알바닷물(14), 알바밤안전한밤(13), 알바크바(13), 알바비바비걸(13), 알바밤군군밤(12), 알바바밤바오밥(12), 알바팀가자(11), 스팀파알바바(10), 알바반드시승리한다패배는저멀리(9), 알바결코시들지않는(9), 스알바스(8), 알바바바밭(8), 알바의알(8), 알바오밤나무(8), 알바그만죽고싶다(8), 알바라라마(7), 알바바바의신비한모험(7), 알바우치플리즈(7), 알바우델리키(7), 알바자마(6), 알바바의(6), 알바바바바부(6), 알바밤밤밤군밤(6), 알바팀고고(6), 알바팀(6), 알바닷가(6), 알바람의파이터(5), 알바다표범(4), 알바마지막까지간다(4), 알바부버(4), 알바다거북(3), 알바밤멘붕(2), 스팀파알바하코(2)"
+                            },
+                            {
+                                "account": "windbang#7648",
+                                "total_level": 695,
+                                "characters": "십팔호입니다(47), 할배포레버(41), 오크대족장(40), 나인파이어(39), 제우소닉(39), 십구호입니다(38), 구호기입니다(38), 오호기입니다(25), 카오스사기네(23), 하네코라킹(23), 머라고머하러머라우더하노(19), 인조인간십팔호(16), 메가미(15), 운율의얼음충격(15), 육호기입니다(15), 이십일호입니다(15), 사호기입니다(15), 이십사호임니다(15), 히네코라킹(15), 액트사까지만가자(15), 권능착취일호기(14), 십일호입니다(13), 세상을향해화살을쏘다(11), 이십삼호임다(11), 니노막시무스카이져소제(10), 구불할꺼야(10), 십칠호입니다(9), 이십이호입지다(9), ㄷㄵㅈㄷㄷㅈㅂㅇ(9), 스모키킹(9), 이슬이는과학입니다(8), 이십오호입니다(8), 이십일호입니다(7), 오크대족장(6), 어둠의실력자가되고십새(6), 갓오브틀(6), 니노막시무스카이져소제(6), 십이호이ㅐㅂ니다(5), 실험이십삼호기(5), 십호기입니다(5), 더킹머서너리(5), 실험이십팔호기(3), 징벌호기(3), 마지막호기(3), 이바리가ㅏ아(2), 김치사발면킹(2), 징벌이다(2)"
+                            },
+                            {
+                                "account": "Over_Driver#3897",
+                                "total_level": 666,
+                                "characters": "자자나(88), 자나봐(81), 돌다리도두드리자나(78), 마지막에서해안을외치다_자나(69), 앗자나(65), 자나오호기출격합니다(64), 조나단에바자나(34), 해안해안해안해안해안해안자나해안해안해안해안(30), 자나_핵블지장인추봉이(23), 자나갑니다(21), 하코담시보하고싶자나(19), 자나사호기그만죽고싶어요(14), 자나가겠습니다(13), 두건쓴자나(13), 각성한사망시해안보조자나(13), 두건쓴자나(12), 자나보다(12), 해안해안해안해안해안해안해안해안해안해안자나(5), 자나자나자나자나자나자나자나자나자나자나자나(4), 삼호기자나(3), 자나자나자나자나자나자나자나자나자나자나자나(3), 바알신령한테한대맞고죽어서만든두번째자나캐릭터(2)"
+                            },
+                            {
+                                "account": "Valkene#5293",
+                                "total_level": 622,
+                                "characters": "자나_테페리스팀파_이십일호(61), 자나_테페리스팀파_칠호기(59), 자나_테페리스팀파_씨파로기(55), 자나_테레피스팀파_오호기(53), 자나_테페리스팀파_십일호기(45), 자나_테페리스팀파_구호기(41), 자나_테페리스팀파_이호기(41), 자나_테페리스팀파_이십이호(38), 자나_테페리스팀파_십삼호기(34), 자나_테페리스팀파_일호기(32), 자나_테페리스팀파_사호기(32), 자나_테페리스팀파_삼호기(28), 자나_테페리_십이호기(27), 자나_테페리스팀파_팔호기(24), 자나_테페리스팀파_육호기(17), 자나_테페리스팀파_십구호기(16), 자나_테페리스팀파_십사호기(14), 자나_테페리스팀파_십호기(3), 자나_테페리스팀파_이십호(2)"
+                            },
+                            {
+                                "account": "kilop8680#6198",
+                                "total_level": 595,
+                                "characters": "그만보자했자나씹타바(82), 갠자뤵뒹됭됑륑(72), 안갠자나열받네(69), 갠자나뢩됑롱뒹륑(60), 갠자나뒹륑륑뒹륑(50), 자나깨나앉으나서나(42), 개화났자나(40), 비유자나자나(35), 호에에자나(33), 젤리먹는또치자나(32), 갠자나륑뒹뤵뒁뢩(29), 지쳤자나플리커나해봐야지십(14), 아니자나(8), 젤또화났자나(7), 화가난댜자나(6), 아니이씹개같자나(6), 괜자나뤵뒝됭뎽뒹(4), 자나_호에에(3), 자나_비유(2), asdfasdfsfghdgfh(1)"
+                            },
+                            {
+                                "account": "헬브람#3468",
+                                "total_level": 575,
+                                "characters": "자나_냥냥이(57), 케이르_자나(53), 알렌누워서자나요(49), 코렛자나(49), 코렛_자나(46), 엘런_자나(45), 냥이자나용(44), 자나_캐이르(41), 그렇게자고또자나(41), 자나_앨런(39), 자나_엘런(37), 라스트자나옹(37), 우리냥이자나(29), 자나_케이르(5), 자나_알렌(3)"
+                            },
+                            {
+                                "account": "JooRazEr#0982",
+                                "total_level": 573,
+                                "characters": "찐막코인이자나(93), 자나야자나(83), 지어박자나(62), 따라하지말라자나(60), 젤또는남자를좋아하자나(58), 애들자나_응_아니여보갑자기옷은왜(56), 용병이캐리하자나(53), 젤또잘생겼자나미남이자나(53), 용병으로캐리하자나(48), 젤또는또죽고자나(7)"
+                            },
+                            {
+                                "account": "dtuwxc#4886",
+                                "total_level": 560,
+                                "characters": "그만죽고싶자나(80), 젤또머리축구공이자나(75), 윈도우키뽑아버릴거자나(68), 젤빡박이왤케잘하자나(67), 싸보렷자나(66), 에겐디티자나(48), 자나에겐디티(47), 나진짜개못하자나(41), 자나깨나염소조심(40), 자나_에겐성능충(11), 젤또는하코퇴물이자나(9), 나개못하자나(5), 젤또이제퇴물이자나(3)"
+                            },
+                            {
+                                "account": "케이건드라카#1600",
+                                "total_level": 554,
+                                "characters": "알바로간다(92), 젤또는잠을자나(90), 팀자나(90), 패악귀자나(87), 막트자나(73), 단단하자나(67), 이젠안죽자나(53), 제무푸패ㅜ배ㅜㅋ(2)"
+                            },
+                            {
+                                "account": "wjdgur#0198",
+                                "total_level": 543,
+                                "characters": "포큰알바(73), 아리알바노(73), 알바포포크(73), 자나_포크삼호기(69), 오포크_알바(66), 알바_오포크(41), 이생포알바(39), 자나_포크포크(26), 알바언제까지(23), 포크마_알바(19), 자나_포크(9), 자나_포크(9), 알바아리(8), 포크_알바(8), 아리알바투(5), 알바_포크오(2)"
+                            }
+                        ]
+                    },
+                    "20_account_death_count_top10": {
+                        "description": "가장 많은 캐릭터를 죽음으로 경험한 플레이어 순위입니다",
+                        "calculation": "사망한 캐릭터들(Dead가 True)을 계정별로 그룹화하여 그 수를 셉니다",
+                        "data": [
+                            {"account": "windbang#7648", "death_count": 47},
+                            {"account": "AgeofMytho1ogy#2689", "death_count": 43},
+                            {"account": "skydec21#5174", "death_count": 30},
+                            {"account": "mungchm#5792", "death_count": 27},
+                            {"account": "브으울랙#4994", "death_count": 26},
+                            {"account": "심판자르르#6898", "death_count": 26},
+                            {"account": "ninetyniner#7316", "death_count": 26},
+                            {"account": "확실한선택#0163", "death_count": 25},
+                            {"account": "enfflrjf#5351", "death_count": 24},
+                            {"account": "밍뚜2#4006", "death_count": 21}
+                        ]
+                    }
+                }
+            }
+        };
+
+        // 페이지 로드 시 모든 통계 표시
+        document.addEventListener('DOMContentLoaded', function() {
+            renderOverallStats();
+            renderTeamBattle();
+            renderTeamRankers();
+            renderTeamClassPreference();
+            renderClassDistribution();
+            renderDeathAnalysis();
+            renderLevelDistribution();
+            renderDeathRate();
+            renderClassAnalysis();
+            renderRankingSurvival();
+            renderHallOfFame();
+            renderDeathCountRanking();
+            renderStatisticsExplanation();
+        });
+
+        // 전체 통계 렌더링
+        function renderOverallStats() {
+            const container = document.getElementById('overall-stats');
+            const data = statsData.league_analysis.part1_overall_league_status;
+            
+            const stats = [
+                {
+                    value: data['1_total_participants'].value.toLocaleString(),
+                    title: "총 참가자",
+                    unit: data['1_total_participants'].unit,
+                    color: "bg-blue-800"
+                },
+                {
+                    value: data['2_total_characters_created'].value.toLocaleString(),
+                    title: "생성된 캐릭터",
+                    unit: data['2_total_characters_created'].unit,
+                    color: "bg-green-800"
+                },
+                {
+                    value: data['3_average_characters_per_account'].value,
+                    title: "계정당 평균",
+                    unit: data['3_average_characters_per_account'].unit,
+                    color: "bg-purple-800"
+                },
+                {
+                    value: (statsData.league_analysis.part2_team_battle_analysis['8_team_distribution'].data['자나팀'] + 
+                           statsData.league_analysis.part2_team_battle_analysis['8_team_distribution'].data['알바팀']).toLocaleString(),
+                    title: "팀전 캐릭터",
+                    unit: "자나팀 vs 알바팀",
+                    color: "bg-red-800"
+                }
+            ];
+
+            stats.forEach(stat => {
+                container.innerHTML += `
+                    <div class="stat-card ${stat.color} rounded-xl p-6 text-center">
+                        <div class="text-4xl font-bold text-yellow-300">${stat.value}</div>
+                        <div class="text-lg font-medium mt-2">${stat.title}</div>
+                        <div class="text-sm opacity-75 mt-1">${stat.unit}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // 팀별 대결 통계 렌더링
+        function renderTeamBattle() {
+            const container = document.getElementById('team-battle');
+            const teamData = statsData.league_analysis.part2_team_battle_analysis;
+            
+            const teams = [
+                {
+                    name: "🔥 자나팀",
+                    color: "bg-blue-800",
+                    data: {
+                        characters: teamData['8_team_distribution'].data['자나팀'],
+                        avgLevel: teamData['9_team_average_level'].data['자나팀'],
+                        survival: teamData['10_team_survival_rate'].data['자나팀'],
+                        top200: teamData['11_team_top200_rankers'].data['자나팀'],
+                        totalExp: teamData['13_team_total_experience'].data['자나팀'],
+                        above60: teamData['14_team_characters_above_level'].data['자나팀'].above_60,
+                        above70: teamData['14_team_characters_above_level'].data['자나팀'].above_70,
+                        above80: teamData['14_team_characters_above_level'].data['자나팀'].above_80,
+                        above90: teamData['14_team_characters_above_level'].data['자나팀'].above_90
+                    }
+                },
+                {
+                    name: "⚡ 알바팀",
+                    color: "bg-red-800",
+                    data: {
+                        characters: teamData['8_team_distribution'].data['알바팀'],
+                        avgLevel: teamData['9_team_average_level'].data['알바팀'],
+                        survival: teamData['10_team_survival_rate'].data['알바팀'],
+                        top200: teamData['11_team_top200_rankers'].data['알바팀'],
+                        totalExp: teamData['13_team_total_experience'].data['알바팀'],
+                        above60: teamData['14_team_characters_above_level'].data['알바팀'].above_60,
+                        above70: teamData['14_team_characters_above_level'].data['알바팀'].above_70,
+                        above80: teamData['14_team_characters_above_level'].data['알바팀'].above_80,
+                        above90: teamData['14_team_characters_above_level'].data['알바팀'].above_90
+                    }
+                }
+            ];
+
+            teams.forEach(team => {
+                container.innerHTML += `
+                    <div class="${team.color} rounded-xl p-6">
+                        <h3 class="text-3xl font-bold text-center mb-4 text-yellow-300">${team.name}</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg">총 캐릭터</span>
+                                <span class="text-2xl font-bold text-yellow-300">${team.data.characters.toLocaleString()}개</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg">평균 레벨</span>
+                                <span class="text-2xl font-bold text-yellow-300">${team.data.avgLevel}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg">생존율</span>
+                                <span class="text-2xl font-bold text-green-400">${team.data.survival}%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg">TOP200 진입</span>
+                                <span class="text-2xl font-bold text-purple-400">${team.data.top200}명</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg">총 경험치</span>
+                                <span class="text-xl font-bold text-orange-400">${(team.data.totalExp / 1e9).toFixed(1)}B</span>
+                            </div>
+                            <div class="text-sm mt-4 bg-gray-900 rounded p-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>60+ 레벨: <span class="font-bold text-cyan-400">${team.data.above60}명</span></div>
+                                    <div>70+ 레벨: <span class="font-bold text-cyan-400">${team.data.above70}명</span></div>
+                                    <div>80+ 레벨: <span class="font-bold text-cyan-400">${team.data.above80}명</span></div>
+                                    <div>90+ 레벨: <span class="font-bold text-cyan-400">${team.data.above90}명</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 팀별 TOP 20 랭커 렌더링
+        function renderTeamRankers() {
+            const janaContainer = document.getElementById('jana-top20');
+            const albaContainer = document.getElementById('alba-top20');
+            
+            const teamRankers = statsData.league_analysis.part2_team_battle_analysis['15_team_top20_rankers'].data;
+            
+            // 자나팀 TOP 20
+            teamRankers['자나팀'].forEach((player, index) => {
+                janaContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-gray-900 rounded">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold w-8 text-yellow-400">${player.rank}위</span>
+                            <div>
+                                <div class="text-sm font-bold">${player.character}</div>
+                                <div class="text-xs opacity-75">${player.account}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 알바팀 TOP 20
+            teamRankers['알바팀'].forEach((player, index) => {
+                albaContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-gray-900 rounded">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold w-8 text-yellow-400">${player.rank}위</span>
+                            <div>
+                                <div class="text-sm font-bold">${player.character}</div>
+                                <div class="text-xs opacity-75">${player.account}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 팀별 클래스 선호도 렌더링
+        function renderTeamClassPreference() {
+            const janaContainer = document.getElementById('jana-class-preference');
+            const albaContainer = document.getElementById('alba-class-preference');
+            
+            const classPreference = statsData.league_analysis.part2_team_battle_analysis['12_team_class_preference_top5'].data;
+            
+            // 자나팀 클래스 선호도
+            classPreference['자나팀'].forEach((classData, index) => {
+                janaContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-900 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <span class="text-lg">${classData.class}</span>
+                        </div>
+                        <span class="text-xl font-bold text-yellow-300">${classData.count.toLocaleString()}개</span>
+                    </div>
+                `;
+            });
+
+            // 알바팀 클래스 선호도
+            classPreference['알바팀'].forEach((classData, index) => {
+                albaContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-900 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <span class="text-lg">${classData.class}</span>
+                        </div>
+                        <span class="text-xl font-bold text-yellow-300">${classData.count.toLocaleString()}개</span>
+                    </div>
+                `;
+            });
+        }
+
+        // 클래스 분포 렌더링
+        function renderClassDistribution() {
+            const container = document.getElementById('class-distribution');
+            const data = statsData.league_analysis.part1_overall_league_status['4_class_distribution'].data;
+            
+            const sortedClasses = Object.entries(data)
+                .sort((a, b) => b[1].percentage - a[1].percentage);
+            
+            sortedClasses.forEach(([className, classData]) => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-xl font-bold w-32">${className}</span>
+                            <div class="w-96 bg-gray-600 rounded-full h-6 relative overflow-hidden">
+                                <div class="chart-bar h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
+                                     style="width: ${classData.percentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 text-right">
+                            <span class="text-lg font-bold text-yellow-300">${classData.characters.toLocaleString()}개</span>
+                            <span class="text-lg font-bold text-green-400 w-16">${classData.percentage}%</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 클래스별 사망 분석 렌더링
+        function renderDeathAnalysis() {
+            const container = document.getElementById('death-analysis');
+            const data = statsData.league_analysis.part1_overall_league_status['5_death_analysis'].average_death_level_by_class.data;
+            
+            const sortedClasses = Object.entries(data)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 15); // TOP 15만 표시
+
+            sortedClasses.forEach(([className, avgDeathLevel], index) => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <span class="text-lg">${className}</span>
+                        </div>
+                        <span class="text-xl font-bold text-red-400">Lv.${avgDeathLevel}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // 레벨 분포 렌더링
+        function renderLevelDistribution() {
+            const container = document.getElementById('level-distribution');
+            const data = statsData.league_analysis.part1_overall_league_status['6_level_range_distribution'].data;
+            
+            const maxValue = Math.max(...Object.values(data));
+            
+            Object.entries(data).forEach(([range, count]) => {
+                const percentage = (count / maxValue * 100);
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-lg font-bold w-20">Lv.${range}</span>
+                            <div class="w-64 bg-gray-600 rounded-full h-5">
+                                <div class="chart-bar h-full bg-gradient-to-r from-green-500 to-blue-500 rounded-full" 
+                                     style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <span class="text-xl font-bold text-yellow-300">${count.toLocaleString()}개</span>
+                    </div>
+                `;
+            });
+        }
+
+        // 사망률 렌더링
+        function renderDeathRate() {
+            const container = document.getElementById('death-rate');
+            const data = statsData.league_analysis.part1_overall_league_status['7_death_rate_by_level_range'].data;
+            
+            Object.entries(data).forEach(([range, deathData]) => {
+                const deathRate = deathData.death_rate;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-lg font-bold w-20">Lv.${range}</span>
+                            <div class="w-64 bg-gray-600 rounded-full h-5">
+                                <div class="chart-bar h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full" 
+                                     style="width: ${deathRate}%"></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xl font-bold text-red-400">${deathRate}%</span>
+                            <div class="text-xs text-gray-400">${deathData.deaths}명 사망</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 클래스 성능 분석 렌더링
+        function renderClassAnalysis() {
+            const survivalContainer = document.getElementById('survival-rate');
+            const levelContainer = document.getElementById('average-level');
+            
+            const survivalData = statsData.league_analysis.part3_detailed_analysis['16_class_survival_rate'].data;
+            const levelData = statsData.league_analysis.part3_detailed_analysis['17_class_average_level'].data;
+            
+            // 생존율 TOP 15
+            const topSurvival = Object.entries(survivalData)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 15);
+            
+            topSurvival.forEach(([className, rate], index) => {
+                survivalContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <span class="text-lg">${className}</span>
+                        </div>
+                        <span class="text-xl font-bold text-green-400">${rate}%</span>
+                    </div>
+                `;
+            });
+            
+            // 평균 레벨 TOP 15
+            const topLevel = Object.entries(levelData)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 15);
+            
+            topLevel.forEach(([className, level], index) => {
+                levelContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <span class="text-lg">${className}</span>
+                        </div>
+                        <span class="text-xl font-bold text-blue-400">Lv.${level}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // 랭킹별 생존율 렌더링
+        function renderRankingSurvival() {
+            const container = document.getElementById('ranking-survival');
+            const data = statsData.league_analysis.part3_detailed_analysis['18_survival_rate_by_ranking'].data;
+            
+            const maxRate = Math.max(...Object.values(data));
+            
+            Object.entries(data).forEach(([range, rate]) => {
+                const percentage = (rate / maxRate * 100);
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-lg font-bold w-24">${range}위</span>
+                            <div class="w-80 bg-gray-600 rounded-full h-5">
+                                <div class="chart-bar h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" 
+                                     style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <span class="text-xl font-bold text-cyan-400">${rate}%</span>
+                    </div>
+                `;
+            });
+        }
+
+        // 명예의 전당 렌더링
+        function renderHallOfFame() {
+            const tragicContainer = document.getElementById('tragic-deaths');
+            const totalLevelContainer = document.getElementById('total-level-ranking');
+            
+            const tragicData = statsData.league_analysis.part1_overall_league_status['5_death_analysis'].most_tragic_deaths_top10.data;
+            const totalLevelData = statsData.league_analysis.part3_detailed_analysis['19_account_total_level_top30'].data;
+            
+            // 최고 레벨 사망자
+            tragicData.forEach((player, index) => {
+                tragicContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <div>
+                                <div class="text-sm font-bold">${player.character}</div>
+                                <div class="text-xs opacity-75">${player.account}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold text-red-400">Lv.${player.level}</div>
+                            <div class="text-xs text-gray-400">${player.class}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // 총 레벨 합계 TOP 10 - 캐릭터 목록 포함
+            totalLevelData.slice(0, 10).forEach((account, index) => {
+                const isExpanded = index < 3; // 상위 3명은 기본적으로 확장된 상태
+                totalLevelContainer.innerHTML += `
+                    <div class="bg-gray-700 rounded p-2 mb-2">
+                        <div class="flex items-center justify-between expandable" onclick="toggleCharacterList('chars-${index}')">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg font-bold w-8">${index + 1}.</span>
+                                <div class="text-sm font-bold">${account.account}</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xl font-bold text-yellow-400">Lv.${account.total_level}</span>
+                                <span class="text-lg">👁️</span>
+                            </div>
+                        </div>
+                        <div id="chars-${index}" class="character-list mt-2 text-xs ${isExpanded ? '' : 'hidden'}">
+                            <div class="bg-gray-600 p-2 rounded text-gray-300">
+                                <div class="font-bold mb-1">캐릭터 목록:</div>
+                                <div class="whitespace-pre-wrap">${account.characters}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 최다 사망자 렌더링
+        function renderDeathCountRanking() {
+            const container = document.getElementById('death-count-ranking');
+            const data = statsData.league_analysis.part3_detailed_analysis['20_account_death_count_top10'].data;
+            
+            data.forEach((account, index) => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg font-bold w-8">${index + 1}.</span>
+                            <div class="text-lg font-bold">${account.account}</div>
+                        </div>
+                        <span class="text-2xl font-bold text-red-400">💀 ${account.death_count}회</span>
+                    </div>
+                `;
+            });
+        }
+
+        // 통계 설명 렌더링
+        function renderStatisticsExplanation() {
+            const container = document.getElementById('statistics-explanation');
+            
+            const explanations = [
+                {
+                    title: "총 참가자 수",
+                    description: statsData.league_analysis.part1_overall_league_status['1_total_participants'].description,
+                    calculation: statsData.league_analysis.part1_overall_league_status['1_total_participants'].calculation
+                },
+                {
+                    title: "평균 캐릭터 수",
+                    description: statsData.league_analysis.part1_overall_league_status['3_average_characters_per_account'].description,
+                    calculation: statsData.league_analysis.part1_overall_league_status['3_average_characters_per_account'].calculation
+                },
+                {
+                    title: "클래스 분포",
+                    description: statsData.league_analysis.part1_overall_league_status['4_class_distribution'].description,
+                    calculation: statsData.league_analysis.part1_overall_league_status['4_class_distribution'].calculation
+                },
+                {
+                    title: "팀별 생존율",
+                    description: statsData.league_analysis.part2_team_battle_analysis['10_team_survival_rate'].description,
+                    calculation: statsData.league_analysis.part2_team_battle_analysis['10_team_survival_rate'].calculation
+                },
+                {
+                    title: "클래스별 생존율",
+                    description: statsData.league_analysis.part3_detailed_analysis['16_class_survival_rate'].description,
+                    calculation: statsData.league_analysis.part3_detailed_analysis['16_class_survival_rate'].calculation
+                },
+                {
+                    title: "랭킹별 생존율",
+                    description: statsData.league_analysis.part3_detailed_analysis['18_survival_rate_by_ranking'].description,
+                    calculation: statsData.league_analysis.part3_detailed_analysis['18_survival_rate_by_ranking'].calculation
+                },
+                {
+                    title: "레벨 구간 분포",
+                    description: statsData.league_analysis.part1_overall_league_status['6_level_range_distribution'].description,
+                    calculation: statsData.league_analysis.part1_overall_league_status['6_level_range_distribution'].calculation
+                },
+                {
+                    title: "사망률",
+                    description: statsData.league_analysis.part1_overall_league_status['7_death_rate_by_level_range'].description,
+                    calculation: statsData.league_analysis.part1_overall_league_status['7_death_rate_by_level_range'].calculation
+                }
+            ];
+            
+            explanations.forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <h4 class="text-xl font-bold mb-2 text-yellow-400">${item.title}</h4>
+                        <p class="text-sm mb-2 opacity-90">${item.description}</p>
+                        <div class="text-xs opacity-75 bg-gray-600 p-2 rounded">
+                            <strong>계산 방식:</strong> ${item.calculation}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 캐릭터 목록 토글 함수
+        function toggleCharacterList(id) {
+            const element = document.getElementById(id);
+            element.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
