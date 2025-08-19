@@ -25,7 +25,7 @@
     <!-- 헤더 -->
     <header class="bg-gradient-to-r from-blue-900 to-purple-900 p-6 text-center">
         <h1 class="text-5xl font-extrabold mb-2">스팀파 리그 통계</h1>
-        <p class="text-xl opacity-80">Path of Exile 스팀파 리그 통계</p>
+        <p class="text-xl opacity-80">Path of Exile 스팀파 리그 통계 (19일 오후 4시 기준)</p>
     </header>
 
     <!-- 메인 컨테이너 -->
@@ -695,14 +695,14 @@
                 },
                 {
                     value: data['3_average_characters_per_account'].value,
-                    title: "계정당 평균",
+                    title: "계정당 평균 캐릭터 수",
                     unit: data['3_average_characters_per_account'].unit,
                     color: "bg-purple-800"
                 },
                 {
                     value: (statsData.league_analysis.part2_team_battle_analysis['8_team_distribution'].data['자나팀'] + 
                            statsData.league_analysis.part2_team_battle_analysis['8_team_distribution'].data['알바팀']).toLocaleString(),
-                    title: "팀전 캐릭터 (자나, 알바 정확히 포함)",
+                    title: "자나, 알바 정확히 포함된 캐릭터 수",
                     unit: "자나팀 vs 알바팀",
                     color: "bg-red-800"
                 }
